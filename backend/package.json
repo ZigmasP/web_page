@@ -7,10 +7,10 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["node.js", "express", "backend", "API", "authentication", "file-upload", "image-processing"],
   "author": "Zigmas",
   "license": "MIT",
-  "description": "",
+  "description": "Node.js backend server with Express for handling API requests, user authentication, and image processing",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
