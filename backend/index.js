@@ -107,6 +107,70 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+//Maršrutai
+app.post('/works', authenticateToken, upload.single('photo'), async (req, res, next) => {
+  try {
+    const { title, description } = req.body;
+    const photo = req.file ? req.file.filename : null;
+    const query = 'INSERT INTO works (title, description, photo) VALUES (?, ?, ?)';
+    const [results] = await pool.query(query, [title, description, photo]);
+    res.status(200).json({ message: 'Duomenys sėkmingai įrašyti.', insertId: results.insertId });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/works', async (req, res, next) => {
+  try {
+    const query = 'SELECT * FROM works';
+    const [results] = await pool.query(query);
+    res.status(200).json(results);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/works/id:', authenticateToken, upload.single('photo'), async (req, res, next) => {
+  if(!req.user.isAdmin) return res.status(403).json({ error: 'Neteisėta prieiga' });
+  try {
+    const workId = req.params.id;
+    const { title, description } = req.body;
+    const photo = req.file ? req.file.name : req.body.existingPhoto;
+    if (!photo) {
+      return res.status(400).json({ error: 'Nuotrauka privaloma' });
+    }
+    const query = 'UPDATE works SET title =?, description = ?, photo = ? WHERE id = ?';
+    const [results] = await pool.query(query, [title, description, photo, workId]);
+    res.status(200) .json({ message: 'Įrašas sėkmingai atnaujinatas.', affectedRows: results.affectedRows });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete('/works/:id', authenticateToken, async (req, res, next) => {
+  if(!req.user.isAdmin) return res.status(403).json({ error: 'Neteisėta prieiga' });
+  try {
+    const workId = req.params.id;
+    const getPhotoQuery = 'SELECT photo FROM works WHERE id = ?';
+    const [results] = await pool.query(getPhotoQuery, [workId]);
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Įrašas nerastas.' });
+    }
+    const photo = results[0].photo;
+    const photoPath = path.join(uploadsPath, photo);
+    fs.unlink(photoPath, async (err) => {
+      if (err) {
+        return next(err);
+      }
+      const deleteQuery = 'DELETE FROM works WHERE id = ?';
+      const [results] = await pool.query(deleteQuery, [workId]);
+      res.status(200).json({ message: 'Įrašas sėkmingai ištrintas.', affectedRows: results.affectedRows });
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.listen(port, () => {
   console.log(`Serveris veikia ant ${port}`);
 });
