@@ -40,6 +40,20 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+// Multer konfiguracija
+const storage = multer.diskStorage({
+  destination: function (req, res, cb) {
+    cb(null, uploadsPath);
+  },
+  filename: function (req, res, cb) {
+    const uniqueSuffix = Date.now() + Math.round(Math.random() * 1e9);
+    const extension = path.extname(file.originalame);
+    cb(null, `photo-${uniqueSuffix}${extension}`);
+  },
+});
+
+
+
 app.listen(port, () => {
   console.log(`Serveris veikia ant ${port}`);
 });
