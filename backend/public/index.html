@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prisijungimas</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <title>Registracija ir Prisijungimas</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     #registerForm, #workForm, #searchForm, #logoutButton, #workList {
@@ -19,23 +16,188 @@
     <div class="form-container">
       <form id="loginForm">
         <h3>Prisijungimas</h3>
-        <label for="loginUsername">Vartotojas:</label>
+        <label for="loginUsername">Vartotojo vardas:</label>
         <input type="text" id="loginUsername" name="username" required>
         <label for="loginPassword">Slaptažodis:</label>
         <input type="password" id="loginPassword" name="password" required>
         <button type="submit">Prisijungti</button>
-        <p>Neturite paskyros? Registruokitės <a href="#" id="showRegisterForm">čia.</a></p>
+        <a href="#" id="showRegisterForm">Neturite paskyros? Registruokitės čia.</a>
       </form>
       <form id="registerForm">
         <h3>Registracija</h3>
-        <label for="registerUsername">Vartotojas:</label>
+        <label for="registerUsername">Vartotojo vardas:</label>
         <input type="text" id="registerUsername" name="username" required>
         <label for="registerPassword">Slaptažodis:</label>
         <input type="password" id="registerPassword" name="password" required>
-        <button type="submit">Registuotis</button>
+        <button type="submit">Registruotis</button>
+        <a href="#" id="showLoginForm">Turite paskyrą? Prisijunkite čia.</a>
       </form>
-
     </div>
+
+    <div id="workForm" class="form-container">
+      <form id="addWorkForm">
+        <h3>Pridėti darbą</h3>
+        <label for="workTitle">Pavadinimas:</label>
+        <input type="text" id="workTitle" name="title" required>
+        <label for="description">Aprašymas</label>
+        <textarea id="description" name="description" required></textarea>
+        <label for="photo">Nuotrauka</label>
+        <input type="file" id="photo" name="photo" accept="image/*" required>
+        <button type="submit">Pridėti darbą</button>
+      </form>
+    </div>
+
+    <div id="searchForm" class="form-container">
+      <h3>Paieška</h3>
+      <input type="text" id="search" name="search" placeholder="Ieškoti...">
+      <button type="button" onclick="searchWorks()">Ieškoti</button>
+    </div>
+
+    <div id="workList" class="works-container">
+      <h3>Padarytų darbų sąrašas</h3>
+      <div class="worksFlexContainer" id="worksFlexContainer">
+        <!-- Work items will be appended here -->
+      </div>
+    </div>
+
+    <button id="logoutButton">Atsijungti</button>
   </div>
+
+  <script src="login.js"></script>
+  <script src="register.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('showRegisterForm').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('loginForm').style.display = 'none';
+      });
+
+      document.getElementById('showLoginForm').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+      });
+
+      document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const token = 'mock-token'; // Pakeiskite tikru token gavimo būdu
+        if (token) {
+          localStorage.setItem('token', token);
+          document.getElementById('loginForm').style.display = 'none';
+          document.getElementById('registerForm').style.display = 'none';
+          document.getElementById('workForm').style.display = 'block';
+          document.getElementById('searchForm').style.display = 'block';
+          document.getElementById('workList').style.display = 'block';
+          document.getElementById('logoutButton').style.display = 'block';
+
+          // Išvalyti prisijungimo formos laukus
+          document.getElementById('loginUsername').value = '';
+          document.getElementById('loginPassword').value = '';
+        }
+      });
+
+      document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        document.getElementById('workForm').style.display = 'none';
+        document.getElementById('searchForm').style.display = 'none';
+        document.getElementById('workList').style.display = 'none';
+        document.getElementById('logoutButton').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+      });
+
+      document.getElementById('addWorkForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        addWork();
+      });
+    });
+
+    function addWork() {
+      const workTitleInput = document.getElementById('workTitle');
+      const descriptionInput = document.getElementById('description');
+      const photoInput = document.getElementById('photo');
+
+      const workTitle = workTitleInput.value.trim();
+      const description = descriptionInput.value.trim();
+      const photo = photoInput.files[0]; // Nuotraukos failo įrašas
+
+      if (workTitle === '' || description === '' || !photo) {
+        alert('Visi laukai privalomi.');
+        return;
+      }
+
+      const workList = document.getElementById('worksFlexContainer');
+      const workItem = document.createElement('div');
+      workItem.className = 'work-item';
+
+      const img = document.createElement('img'); // Sukuriame img elementą
+      img.className = 'workPhoto';
+      img.src = URL.createObjectURL(photo);
+
+      const workItemContainer = document.createElement('div');
+      workItemContainer.className = 'workItemContainer';
+
+      const workTitleDisplay = document.createElement('div');
+      workTitleDisplay.className = 'workTitle';
+      workTitleDisplay.innerText = workTitle;
+
+      const descriptionDisplay = document.createElement('div');
+      descriptionDisplay.className = 'workDescription';
+      descriptionDisplay.innerText = description;
+
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'buttonContainer';
+
+      const editButton = document.createElement('button');
+      editButton.innerText = 'Redaguoti';
+      editButton.onclick = () => {
+        if (editButton.innerText === 'Redaguoti') {
+          workTitleDisplay.contentEditable = true;
+          descriptionDisplay.contentEditable = true;
+          editButton.innerText = 'Išsaugoti';
+        } else {
+          workTitleDisplay.contentEditable = false;
+          descriptionDisplay.contentEditable = false;
+          editButton.innerText = 'Redaguoti';
+        }
+      };
+
+      const deleteButton = document.createElement('button');
+      deleteButton.innerText = 'Ištrinti';
+      deleteButton.onclick = () => {
+        workList.removeChild(workItem);
+      };
+
+      buttonContainer.appendChild(editButton);
+      buttonContainer.appendChild(deleteButton);
+
+      workItemContainer.appendChild(workTitleDisplay);
+      workItemContainer.appendChild(descriptionDisplay);
+
+      workItem.appendChild(img);
+      workItem.appendChild(workItemContainer);
+      workItem.appendChild(buttonContainer);
+
+      workList.appendChild(workItem);
+
+      workTitleInput.value = ''; // Išvalo laukus po pridėjimo
+      descriptionInput.value = '';
+      photoInput.value = '';
+    }
+
+    function searchWorks() {
+      const searchInput = document.getElementById('search').value.toLowerCase();
+      const workItems = document.querySelectorAll('.work-item');
+
+      workItems.forEach(item => {
+        const workTitle = item.querySelector('.workTitle').innerText.toLowerCase();
+        if (workTitle.includes(searchInput)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  </script>
 </body>
 </html>

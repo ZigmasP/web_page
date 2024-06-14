@@ -1,14 +1,17 @@
 :root {
   --main-font-family: 'Montserat', sans-serif;
-  --main-bg-color: #80D0C7;
+  --main-bg-color: #F0F0F0;
+  --main-text-color: #333;
   --main-padding: 10px;
   --main-margin: 10px;
+  --main-border: none;
   --main-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 body {
   font-family: var(--main-font-family);
   background-color: var(--main-bg-color);
+  color: var(--main-text-color);
   margin: 0;
   height: 10vh;
   display: flex;
@@ -26,18 +29,21 @@ body {
   align-items: center;  /* Center items horizontally */
 }
 
-.form-container {
+.form-container,
+.search-container,
+.works-comtainer {
   width: 100%; /* Full width on mobile */
   max-width: 350px;
   background-color: transparent; /*padaro konteineri permatoma*/ 
-  border: none; /* nera konteinerio krastiniu*/
+  border: var(--main-border); /* nera konteinerio krastiniu*/
   box-shadow: var(--main-box-shadow); /*uzdedamas seselis*/
   padding: var(--main-padding);
   box-sizing: border-box;
   margin: var(--main-margin) 0; /* Stack vertically with margins */
 }
 
-.form-container h3 {
+.form-container h3,
+.search-container h2 {
   text-align: center;
   margin: 0 0 var(--main-margin);
 }
@@ -49,15 +55,92 @@ body {
 
 .form-container form input,
 .form-container form textarea,
-.form-container form button {
-  width: 100%;
-  margin-bottom: 15px;
-  box-sizing: border-box; /* Ensure border and padding are included in the element's total width */
+.form-container form button,
+.search-container input,
+.search-container button {
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box; /* Ensure border and padding are included in the element's total width */
+}
+
+a {
+  text-decoration: none;
+  color: red;
+}
+
+input#search {
+  width: 265px;
 }
 
 .form-container form input,
 .form-container form textarea {
   display: block;
+}
+
+.form-container form button {
+  display: block;
+  width: 100%; /* Ensure buttons are the same width as inputs */
+}
+
+.works-container {
+  flex: 1;
+  padding: var(--main-padding);
+  background-color: transparent;
+  border: var(--main-border);
+  box-shadow: var(--main-box-shadow);
+}
+
+.worksFlexContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Ensure the items spread across the container */
+  width: 100%;
+  margin: 0;
+}
+
+.work-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: var(--main-padding);
+  margin: var(--main-margin);
+}
+
+.workPhoto {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.workTitle, .workDescription {
+  width: 100%;
+  text-align: center;
+  margin: 5px 0;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.work-item button {
+  margin-right: 10px;
+}
+
+.success-message {
+  position: fixed;
+  top: 20px;
+  left: 50px;
+  transform: translate(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: var(--main-padding) 20px;
+  border-radius: 5px;
+  box-shadow: var(--main-box-shadow);
+  z-index: 1000;
 }
 
 @media (min-width: 768px) {
@@ -66,8 +149,14 @@ body {
     justify-content: center; /* Center items horizontally */
   }
 
-  .form-container {
+  .form-container,
+  .search-container,
+  .works-container {
      width: 300px ; /* Fixed width on larger screens */
      margin: var(--main-margin);
+  }
+
+  .worksFlexContainer {
+     width: 100%;
   }
 }
