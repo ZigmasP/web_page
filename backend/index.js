@@ -1,21 +1,19 @@
 require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
-const cors =  require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const compression = require('compression');
-const brypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { waitForDebugger } = require('inspector');
-const { queue } = require('sharp');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-//Sukuriamas uploads katalogas, jei jo nėra
+// Sukuriamas uploads katalogas, jei jo nėra
 const uploadsPath = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath);
@@ -33,21 +31,21 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  datebase: process.env.DB_NAME,
+  database: process.env.DB_NAME,
   charset: 'utf8mb4',
   waitForConnections: true,
-  conectionLIimit: 10,
+  connectionLimit: 10,
   queueLimit: 0
 });
 
 // Multer konfiguracija
 const storage = multer.diskStorage({
-  destination: function (req, res, cb) {
+  destination: function (req, file, cb) {
     cb(null, uploadsPath);
   },
-  filename: function (req, res, cb) {
+  filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + Math.round(Math.random() * 1e9);
-    const extension = path.extname(file.originalame);
+    const extension = path.extname(file.originalname);
     cb(null, `photo-${uniqueSuffix}${extension}`);
   },
 });
@@ -66,14 +64,14 @@ app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = 'INSERT INTO users (username, password, isAdmin) VALUES (?, ?, ?)';
-    const [results] = await pool.query(query, [username, hashedPassword, true]); //true - admin
-    res.status(201).json({ message: 'Vartotojas sukūrtas sėkmingai' });   
+    const [results] = await pool.query(query, [username, hashedPassword, true]); // true - admin
+    res.status(201).json({ message: 'Vartotojas sukurtas sėkmingai' });
   } catch {
-    res.status(500).json({ error: 'Registracijos klaida '});
+    res.status(500).json({ error: 'Registracijos klaida ' });
   }
 });
 
-//Prisijungimo maršrutas
+// Prisijungimo maršrutas
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -97,8 +95,8 @@ app.post('/login', async (req, res) => {
 // Middleware funkcija autentiškumui patikrinti
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]
-  if (token == null) return res.status(401).json ({ error: 'Neteisėta prieiga' });
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.status(401).json({ error: 'Neteisėta prieiga' });
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.status(403).json({ error: 'Neteisėta prieiga' });
@@ -107,7 +105,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-//Maršrutai
+// Maršrutai
 app.post('/works', authenticateToken, upload.single('photo'), async (req, res, next) => {
   try {
     const { title, description } = req.body;
@@ -130,25 +128,25 @@ app.get('/works', async (req, res, next) => {
   }
 });
 
-app.put('/works/id:', authenticateToken, upload.single('photo'), async (req, res, next) => {
-  if(!req.user.isAdmin) return res.status(403).json({ error: 'Neteisėta prieiga' });
+app.put('/works/:id', authenticateToken, upload.single('photo'), async (req, res, next) => {
+  if (!req.user.isAdmin) return res.status(403).json({ error: 'Neteisėta prieiga' });
   try {
     const workId = req.params.id;
     const { title, description } = req.body;
-    const photo = req.file ? req.file.name : req.body.existingPhoto;
+    const photo = req.file ? req.file.filename : req.body.existingPhoto;
     if (!photo) {
       return res.status(400).json({ error: 'Nuotrauka privaloma' });
     }
     const query = 'UPDATE works SET title =?, description = ?, photo = ? WHERE id = ?';
     const [results] = await pool.query(query, [title, description, photo, workId]);
-    res.status(200) .json({ message: 'Įrašas sėkmingai atnaujinatas.', affectedRows: results.affectedRows });
+    res.status(200).json({ message: 'Įrašas sėkmingai atnaujintas.', affectedRows: results.affectedRows });
   } catch (err) {
     next(err);
   }
 });
 
 app.delete('/works/:id', authenticateToken, async (req, res, next) => {
-  if(!req.user.isAdmin) return res.status(403).json({ error: 'Neteisėta prieiga' });
+  if (!req.user.isAdmin) return res.status(403).json({ error: 'Neteisėta prieiga' });
   try {
     const workId = req.params.id;
     const getPhotoQuery = 'SELECT photo FROM works WHERE id = ?';

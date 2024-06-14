@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prisijungimas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    #registerForm, #workForm, #searchForm, #logoutButton, #workList {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-container">
+      <form id="loginForm">
+        <h3>Prisijungimas</h3>
+        <label for="loginUsername">Vartotojas:</label>
+        <input type="text" id="loginUsername" name="username" required>
+        <label for="loginPassword">Slaptažodis:</label>
+        <input type="password" id="loginPassword" name="password" required>
+        <button type="submit">Prisijungti</button>
+        <p>Neturite paskyros? Registruokitės <a href="#" id="showRegisterForm">čia.</a></p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

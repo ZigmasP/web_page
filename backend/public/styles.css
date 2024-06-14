@@ -1,0 +1,73 @@
+:root {
+  --main-font-family: 'Montserat', sans-serif;
+  --main-bg-color: #80D0C7;
+  --main-padding: 10px;
+  --main-margin: 10px;
+  --main-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: var(--main-font-family);
+  background-color: var(--main-bg-color);
+  margin: 0;
+  height: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  padding: var(--main-padding);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* Mobile-first: Stack vertically */
+  align-items: center;  /* Center items horizontally */
+}
+
+.form-container {
+  width: 100%; /* Full width on mobile */
+  max-width: 350px;
+  background-color: transparent; /*padaro konteineri permatoma*/ 
+  border: none; /* nera konteinerio krastiniu*/
+  box-shadow: var(--main-box-shadow); /*uzdedamas seselis*/
+  padding: var(--main-padding);
+  box-sizing: border-box;
+  margin: var(--main-margin) 0; /* Stack vertically with margins */
+}
+
+.form-container h3 {
+  text-align: center;
+  margin: 0 0 var(--main-margin);
+}
+
+.form-container form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-container form input,
+.form-container form textarea,
+.form-container form button {
+  width: 100%;
+  margin-bottom: 15px;
+  box-sizing: border-box; /* Ensure border and padding are included in the element's total width */
+}
+
+.form-container form input,
+.form-container form textarea {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .container {
+    flex-direction: row; /* Row direction on larger screens */
+    justify-content: center; /* Center items horizontally */
+  }
+
+  .form-container {
+     width: 300px ; /* Fixed width on larger screens */
+     margin: var(--main-margin);
+  }
+}

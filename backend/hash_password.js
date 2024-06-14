@@ -14,7 +14,7 @@ async function createAdminUser() {
     database: process.env.DB_NAME,
     charset: 'utf8mb4',
     waitForConnections: true,
-    cennectionLimit: 10,
+    connectionLimit: 10,
     queueLimit: 0  
   });
 
