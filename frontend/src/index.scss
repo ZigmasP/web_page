@@ -1,6 +1,6 @@
 :root {
   --main-font-family: 'Montserrat', sans-serif;
-  --main-bg-color: #F0F0F0;
+  --main-bg-color: black;
   
 }
 
@@ -18,7 +18,7 @@ header {
   align-items: center;
   padding: 1rem;
   background-color: var(--main-bg-color);
-  color: black;
+  color: white;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -49,18 +49,151 @@ nav ul li {
 }
 
 nav ul li a {
-  color: black;
+  color: white;
   text-decoration: none;
   padding: 0.5rem;
   transition: color 0.3s;
 }
 
 nav ul li a:hover {
-  color: black;
+  color: #0e76a8;
 }
 
 .menu-toggle {
   display: none;
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #0e76a8;
+  color: white;
+}
+
+.about-container {
+  padding: 2rem;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #282c34;
+}
+
+.about-text .content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-text p {
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.highlight {
+  color: #0e76a8;
+}
+
+.works-container {
+  padding: 2rem;
+}
+
+.work-items {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+.workItemContainer {
+  text-align: center;
+}
+
+.workPhoto {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.contacts-container {
+  padding: 2rem;
+  background: #0e76a8;
+  color: white;
+}
+
+.contact-info {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+}
+
+.contact-item .icon {
+  margin-right: 1rem;
+  font-size: 1.5rem;
+}
+
+.contact-item div span {
+  display: block;
+}
+
+.footer-container {
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--main-bg-color);
+  color: white;
+}
+
+@media (min-width: 600px) {
+  .about-container {
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .work-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  header {
+    padding: 1rem 2rem;
+  }
+
+  .hero {
+    padding: 6rem 2rem;
+  }
+
+  .about-container {
+    padding: 4rem;
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .works-container {
+    padding: 4rem;
+  }
+
+  .contacts-container {
+    padding: 4rem;
+  }
+  
+  .contact-info {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

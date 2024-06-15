@@ -21,12 +21,16 @@ if (!fs.existsSync(uploadsPath)) {
 
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Jūsų React frontendo URL
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
 app.use('/uploads', express.static(uploadsPath));
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Duomenų bazės prisijungimai
+// Duomenų bazės prisijungimas
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -38,13 +42,13 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Multer konfiguracija
+// Multer konfigūracija
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadsPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + Math.round(Math.random() * 1e9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const extension = path.extname(file.originalname);
     cb(null, `photo-${uniqueSuffix}${extension}`);
   },
@@ -64,10 +68,11 @@ app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = 'INSERT INTO users (username, password, isAdmin) VALUES (?, ?, ?)';
-    const [results] = await pool.query(query, [username, hashedPassword, true]); // true - admin
+    const [results] = await pool.query(query, [username, hashedPassword, false]); // Pakeičiau į "false", nes nauji vartotojai neturi būti adminai
     res.status(201).json({ message: 'Vartotojas sukurtas sėkmingai' });
-  } catch {
-    res.status(500).json({ error: 'Registracijos klaida ' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Registracijos klaida' });
   }
 });
 
@@ -88,6 +93,7 @@ app.post('/login', async (req, res) => {
     const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
     res.status(200).json({ token });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Prisijungimo klaida' });
   }
 });
@@ -112,8 +118,10 @@ app.post('/works', authenticateToken, upload.single('photo'), async (req, res, n
     const photo = req.file ? req.file.filename : null;
     const query = 'INSERT INTO works (title, description, photo) VALUES (?, ?, ?)';
     const [results] = await pool.query(query, [title, description, photo]);
-    res.status(200).json({ message: 'Duomenys sėkmingai įrašyti.', insertId: results.insertId });
+    const insertId = results.insertId;
+    res.status(200).json({ message: 'Duomenys sėkmingai įrašyti.', insertId });
   } catch (err) {
+    console.error(err);
     next(err);
   }
 });
@@ -124,6 +132,7 @@ app.get('/works', async (req, res, next) => {
     const [results] = await pool.query(query);
     res.status(200).json(results);
   } catch (err) {
+    console.error(err);
     next(err);
   }
 });
@@ -137,10 +146,11 @@ app.put('/works/:id', authenticateToken, upload.single('photo'), async (req, res
     if (!photo) {
       return res.status(400).json({ error: 'Nuotrauka privaloma' });
     }
-    const query = 'UPDATE works SET title =?, description = ?, photo = ? WHERE id = ?';
+    const query = 'UPDATE works SET title = ?, description = ?, photo = ? WHERE id = ?';
     const [results] = await pool.query(query, [title, description, photo, workId]);
     res.status(200).json({ message: 'Įrašas sėkmingai atnaujintas.', affectedRows: results.affectedRows });
   } catch (err) {
+    console.error(err);
     next(err);
   }
 });
@@ -165,10 +175,21 @@ app.delete('/works/:id', authenticateToken, async (req, res, next) => {
       res.status(200).json({ message: 'Įrašas sėkmingai ištrintas.', affectedRows: results.affectedRows });
     });
   } catch (err) {
+    console.error(err);
     next(err);
   }
 });
 
 app.listen(port, () => {
   console.log(`Serveris veikia ant ${port}`);
+});
+
+// Tikriname duomenų bazės prisijungimą po serverio paleidimo
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Klaida jungiantis prie duomenų bazės:', err.message);
+  } else {
+    console.log('Prisijungta prie duomenų bazės!');
+    connection.release(); // Atlaisviname prisijungimą, nes jis nebenaudojamas
+  }
 });
