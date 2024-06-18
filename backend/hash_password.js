@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const msql = require('mysql2/promise');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 async function createAdminUser() {
@@ -19,10 +19,14 @@ async function createAdminUser() {
   });
 
   const query = 'INSERT INTO users (username, password, isAdmin) VALUES (?, ?, ?)';
-  cosnt [results] = await pool.query(query, [username, hashedPassword, true]);
-
-  console.log('Administratorius sukurtas sėkmingai');
-  pool.end();
+  try {
+    const [results] = await pool.query(query, [username, hashedPassword, true]);
+    console.log('Administratorius sukurtas sėkmingai');
+  } catch (err) {
+    console.error('Klaida kuriant admin:', err);
+  } finally {
+    await pool.end();
+  }
 }
 
 createAdminUser().catch(err => {
