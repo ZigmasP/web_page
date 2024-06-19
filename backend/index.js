@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
@@ -9,6 +8,7 @@ const fs = require('fs');
 const compression = require('compression');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -116,6 +116,10 @@ app.post('/works', authenticateToken, upload.single('photo'), async (req, res, n
   try {
     const { title, description } = req.body;
     const photo = req.file ? req.file.filename : null;
+    console.log('Uploaded file:', req.file); // Pridėkite šį pranešimą, kad patikrintumėte, ar failas buvo įkeltas
+    if (!photo) {
+      return res.status(400).json({ error: 'Nuotrauka privaloma' });
+    }
     const query = 'INSERT INTO works (title, description, photo) VALUES (?, ?, ?)';
     const [results] = await pool.query(query, [title, description, photo]);
     const insertId = results.insertId;
@@ -181,7 +185,7 @@ app.delete('/works/:id', authenticateToken, async (req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Serveris veikia ant ${port}`);
+  console.log(`Serveris veikia ant ${port}.`);
 });
 
 // Tikriname duomenų bazės prisijungimą po serverio paleidimo
