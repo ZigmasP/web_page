@@ -38,7 +38,7 @@
     </div>
     <div id="formsRow" class="row-container"> <!-- Naujas konteineris -->
       <div id="workForm" class="form-container">
-        <form id="addWorkForm">
+        <form id="addWorkForm" method="post" action="works" enctype="multipart/form-data">
           <h3>Pridėti darbą</h3>
           <label for="workTitle">Pavadinimas:</label>
           <input type="text" id="workTitle" name="title" required>
@@ -47,6 +47,7 @@
           <label for="photo">Nuotrauka</label>
           <input type="file" id="photo" name="photo" required>
           <button type="submit">Pridėti darbą</button>
+          <p id="formMessage"></p>
         </form>
       </div>
       <div id="searchForm" class="form-container">
@@ -82,7 +83,6 @@
         const username = document.getElementById('loginUsername').value;
         const password = document.getElementById('loginPassword').value;
 
-        // Siųsti duomenis į serverį su fetch API
         fetch('/login', {
           method: 'POST',
           headers: {
@@ -99,11 +99,9 @@
             document.getElementById('searchForm').style.display = 'block';
             document.getElementById('logoutButton').style.display = 'block';
 
-            // Išvalyti prisijungimo formos laukus
             document.getElementById('loginUsername').value = '';
             document.getElementById('loginPassword').value = '';
           } else {
-            // Tvarkyti klaidą prisijungiant
             alert('Neteisingi prisijungimo duomenys');
           }
         })
@@ -121,88 +119,87 @@
 
       document.getElementById('addWorkForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        addWork();
+        const form = document.getElementById('addWorkForm');
+        const formData = new FormData(form);
+
+        fetch('/works', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            document.getElementById('formMessage').textContent = data.message;
+            document.getElementById('workTitle').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('photo').value = '';
+          } else {
+            alert('Nepavyko pridėti darbo');
+          }
+        })
+        .catch(error => console.error('Klaida:', error));
       });
 
-      function addWork() {
-        const workTitle = document.getElementById('workTitle').value;
-        const description = document.getElementById('description').value;
-        const workList = document.getElementById('workList');
-
-        if (workList) {
-          const workItem = document.createElement('div');
-          workItem.className = 'work-item';
-          workItem.innerHTML = `<h4>${workTitle}</h4><p>${description}</p>`;
-          workList.appendChild(workItem);
-
-          // Išvalyti formos laukus
-          document.getElementById('workTitle').value = '';
-          document.getElementById('description').value = '';
-          document.getElementById('photo').value = '';
-        } else {
-          console.error('Elementas su id "workList" nerastas.');
-        }
-      }
-
-      window.searchWorks = function() {
+      function searchWorks() {
         const searchQuery = document.getElementById('search').value;
 
-        fetch(`/search?query=${searchQuery}`, {
+        fetch(`/works?search=${searchQuery}`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
         .then(response => response.json())
         .then(data => {
           const workList = document.getElementById('workList');
-          workList.innerHTML = ''; // Clear previous results
+          workList.innerHTML = '';
 
           if (data.length > 0) {
-            document.getElementById('workList').style.display = 'block'; // Show the workList section
+            document.getElementById('workList').style.display = 'block';
             data.forEach(work => {
               const workItem = document.createElement('div');
               workItem.className = 'work-item';
               workItem.innerHTML = `
                 <h4>${work.title}</h4>
                 <p>${work.description}</p>
-                <img src="${work.photoUrl}" alt="${work.title}">
+                <img src="/uploads/${work.photo}" alt="${work.title}">
                 <button onclick="editWork(${work.id})">Redaguoti</button>
                 <button onclick="deleteWork(${work.id})">Ištrinti</button>
               `;
               workList.appendChild(workItem);
             });
           } else {
-            document.getElementById('workList').style.display = 'none'; // Hide the workList section if no results
+            document.getElementById('workList').style.display = 'none';
             const noResult = document.createElement('p');
             noResult.textContent = 'Nerasta darbų pagal paiešką.';
             workList.appendChild(noResult);
           }
         })
         .catch(error => console.error('Klaida:', error));
-      };
+      }
 
       window.editWork = function(id) {
-        // Implement edit functionality here
-        console.log(`Edit work with id: ${id}`);
+        console.log(`Redaguoti darbą su ID: ${id}`);
+        // Įgyvendinti redagavimo funkcionalumą čia
       };
 
       window.deleteWork = function(id) {
-        fetch(`/delete/${id}`, {
+        fetch(`/works/${id}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
         .then(response => response.json())
         .then(data => {
-          if (data.success) {
+          if (data.message) {
             console.log('Darbas sėkmingai ištrintas');
-            searchWorks(); // Refresh the list after deletion
+            searchWorks(); // Atnaujinti sąrašą po ištrynimo
           } else {
-            console.error('Klaida ištrinant darbą');
+            alert('Klaida ištrinant darbą');
           }
         })
         .catch(error => console.error('Klaida:', error));

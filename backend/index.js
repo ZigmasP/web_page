@@ -68,7 +68,7 @@ app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = 'INSERT INTO users (username, password, isAdmin) VALUES (?, ?, ?)';
-    const [results] = await pool.query(query, [username, hashedPassword, false]); // Pakeičiau į "false", nes nauji vartotojai neturi būti adminai
+    const [results] = await pool.query(query, [username, hashedPassword, false]);
     res.status(201).json({ message: 'Vartotojas sukurtas sėkmingai' });
   } catch (err) {
     console.error(err);
@@ -116,14 +116,13 @@ app.post('/works', authenticateToken, upload.single('photo'), async (req, res, n
   try {
     const { title, description } = req.body;
     const photo = req.file ? req.file.filename : null;
-    console.log('Uploaded file:', req.file); // Pridėkite šį pranešimą, kad patikrintumėte, ar failas buvo įkeltas
     if (!photo) {
       return res.status(400).json({ error: 'Nuotrauka privaloma' });
     }
     const query = 'INSERT INTO works (title, description, photo) VALUES (?, ?, ?)';
     const [results] = await pool.query(query, [title, description, photo]);
     const insertId = results.insertId;
-    res.status(200).json({ message: 'Duomenys sėkmingai įrašyti.', insertId });
+    res.status(200).json({ message: 'Darbas sėkmingai pridėtas', insertId });
   } catch (err) {
     console.error(err);
     next(err);
@@ -152,7 +151,7 @@ app.put('/works/:id', authenticateToken, upload.single('photo'), async (req, res
     }
     const query = 'UPDATE works SET title = ?, description = ?, photo = ? WHERE id = ?';
     const [results] = await pool.query(query, [title, description, photo, workId]);
-    res.status(200).json({ message: 'Įrašas sėkmingai atnaujintas.', affectedRows: results.affectedRows });
+    res.status(200).json({ message: 'Darbas sėkmingai atnaujintas', affectedRows: results.affectedRows });
   } catch (err) {
     console.error(err);
     next(err);
@@ -166,7 +165,7 @@ app.delete('/works/:id', authenticateToken, async (req, res, next) => {
     const getPhotoQuery = 'SELECT photo FROM works WHERE id = ?';
     const [results] = await pool.query(getPhotoQuery, [workId]);
     if (results.length === 0) {
-      return res.status(404).json({ error: 'Įrašas nerastas.' });
+      return res.status(404).json({ error: 'Darbas nerastas' });
     }
     const photo = results[0].photo;
     const photoPath = path.join(uploadsPath, photo);
@@ -176,7 +175,7 @@ app.delete('/works/:id', authenticateToken, async (req, res, next) => {
       }
       const deleteQuery = 'DELETE FROM works WHERE id = ?';
       const [results] = await pool.query(deleteQuery, [workId]);
-      res.status(200).json({ message: 'Įrašas sėkmingai ištrintas.', affectedRows: results.affectedRows });
+      res.status(200).json({ message: 'Darbas sėkmingai ištrintas', affectedRows: results.affectedRows });
     });
   } catch (err) {
     console.error(err);
