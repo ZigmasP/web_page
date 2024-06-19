@@ -36,7 +36,7 @@
         <p>Turite paskyrą? Prisijunkite <a href="#" id="showLoginForm">čia</a>.</p>
       </form>
     </div>
-    <div id="formsRow" class="row-container"> <!-- Naujas konteineris -->
+    <div id="formsRow" class="row-container">
       <div id="workForm" class="form-container">
         <form id="addWorkForm" method="post" action="works" enctype="multipart/form-data">
           <h3>Pridėti darbą</h3>
@@ -65,6 +65,44 @@
     <button id="logoutButton">Atsijungti</button>
   </div>
   <script>
+    function searchWorks() {
+      const searchQuery = document.getElementById('search').value;
+
+      fetch(`/works?search=${searchQuery}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const workList = document.getElementById('workList');
+        workList.innerHTML = '';
+
+        if (data.length > 0) {
+          document.getElementById('workList').style.display = 'block';
+          data.forEach(work => {
+            const workItem = document.createElement('div');
+            workItem.className = 'work-item';
+            workItem.innerHTML = `
+              <h4>${work.title}</h4>
+              <p>${work.description}</p>
+              <img src="/uploads/${work.photo}" alt="${work.title}">
+              <button onclick="editWork(${work.id})">Redaguoti</button>
+              <button onclick="deleteWork(${work.id})">Ištrinti</button>
+            `;
+            workList.appendChild(workItem);
+          });
+        } else {
+          document.getElementById('workList').style.display = 'none';
+          const noResult = document.createElement('p');
+          noResult.textContent = 'Nerasta darbų pagal paiešką.';
+          workList.appendChild(noResult);
+        }
+      })
+      .catch(error => console.error('Klaida:', error));
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('showRegisterForm').addEventListener('click', function(e) {
         e.preventDefault();
@@ -142,44 +180,6 @@
         })
         .catch(error => console.error('Klaida:', error));
       });
-
-      function searchWorks() {
-        const searchQuery = document.getElementById('search').value;
-
-        fetch(`/works?search=${searchQuery}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          const workList = document.getElementById('workList');
-          workList.innerHTML = '';
-
-          if (data.length > 0) {
-            document.getElementById('workList').style.display = 'block';
-            data.forEach(work => {
-              const workItem = document.createElement('div');
-              workItem.className = 'work-item';
-              workItem.innerHTML = `
-                <h4>${work.title}</h4>
-                <p>${work.description}</p>
-                <img src="/uploads/${work.photo}" alt="${work.title}">
-                <button onclick="editWork(${work.id})">Redaguoti</button>
-                <button onclick="deleteWork(${work.id})">Ištrinti</button>
-              `;
-              workList.appendChild(workItem);
-            });
-          } else {
-            document.getElementById('workList').style.display = 'none';
-            const noResult = document.createElement('p');
-            noResult.textContent = 'Nerasta darbų pagal paiešką.';
-            workList.appendChild(noResult);
-          }
-        })
-        .catch(error => console.error('Klaida:', error));
-      }
 
       window.editWork = function(id) {
         console.log(`Redaguoti darbą su ID: ${id}`);
