@@ -71,10 +71,10 @@
           <button type="button" onclick="searchWorks()">Ieškoti</button>
         </div>
       </div>
-    </div>
-    <div id="workList" class="form-container">
-      <h3>Rastas darbas</h3>
-      <!-- Čia bus rodomi darbų sąrašas -->
+      <div id="workList" class="form-container">
+        <h3>Rastas darbas</h3>
+        <!-- Čia bus rodomi darbų sąrašas -->
+      </div>
     </div>
     <button id="logoutButton">Atsijungti</button>
   </div>
@@ -172,6 +172,7 @@
             document.getElementById('authForms').style.display = 'none';
             document.getElementById('workForm').style.display = 'block';
             document.getElementById('searchForm').style.display = 'block';
+            document.getElementById('workList').style.display = 'block';
             document.getElementById('logoutButton').style.display = 'block';
 
             document.getElementById('loginUsername').value = '';
@@ -188,83 +189,10 @@
         document.getElementById('workForm').style.display = 'none';
         document.getElementById('editWorkForm').style.display = 'none';
         document.getElementById('searchForm').style.display = 'none';
-        document.getElementById('logoutButton').style.display = 'none';
         document.getElementById('workList').style.display = 'none';
+        document.getElementById('logoutButton').style.display = 'none';
         document.getElementById('authForms').style.display = 'block';
       });
-
-      document.getElementById('addWorkForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const form = document.getElementById('addWorkForm');
-        const formData = new FormData(form);
-
-        fetch('/works', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            document.getElementById('formMessage').textContent = data.message;
-            document.getElementById('workTitle').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('photo').value = '';
-            searchWorks();
-          } else {
-            alert('Nepavyko pridėti darbo');
-          }
-        })
-        .catch(error => console.error('Klaida:', error));
-      });
-
-      document.getElementById('editForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const workId = document.getElementById('editWorkId').value;
-        const form = document.getElementById('editForm');
-        const formData = new FormData(form);
-
-        fetch(`/works/${workId}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            document.getElementById('editFormMessage').textContent = data.message;
-            searchWorks();
-            document.getElementById('editWorkForm').style.display = 'none';
-            document.getElementById('workForm').style.display = 'block';
-          } else {
-            alert('Nepavyko atnaujinti darbo');
-          }
-        })
-        .catch(error => console.error('Klaida:', error));
-      });
-
-      window.deleteWork = function(id) {
-        fetch(`/works/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            console.log('Darbas sėkmingai ištrintas');
-            searchWorks(); // Atnaujinti sąrašą po ištrynimo
-          } else {
-            alert('Klaida ištrinant darbą');
-          }
-        })
-        .catch(error => console.error('Klaida:', error));
-      };
     });
   </script>
 </body>
