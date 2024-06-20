@@ -64,19 +64,17 @@
           <p id="editFormMessage"></p>
         </form>
       </div>
-      <div>
-        <div id="searchForm" class="search-container">
-          <h3>Paieška</h3>
-          <div class="search-group">
-            <input type="text" id="search" name="search" placeholder="Ieškoti...">
-            <button type="button" onclick="searchWorks()">Ieškoti</button>
-          </div>
-        </div>
-        <div id="workList" class="works-container">
-          <h3>Rastas darbas</h3>
-          <!-- Čia bus rodomi darbų sąrašas -->
+      <div id="searchForm" class="form-container">
+        <h3>Paieška</h3>
+        <div class="search-group">
+          <input type="text" id="search" name="search" placeholder="Ieškoti...">
+          <button type="button" onclick="searchWorks()">Ieškoti</button>
         </div>
       </div>
+    </div>
+    <div id="workList" class="form-container">
+      <h3>Rastas darbas</h3>
+      <!-- Čia bus rodomi darbų sąrašas -->
     </div>
     <button id="logoutButton">Atsijungti</button>
   </div>
@@ -188,16 +186,17 @@
       document.getElementById('logoutButton').addEventListener('click', function() {
         localStorage.removeItem('token');
         document.getElementById('workForm').style.display = 'none';
-        document.getElementById('searchForm').style.display = 'none';
         document.getElementById('editWorkForm').style.display = 'none';
-        document.getElementById('workList').style.display = 'none';
+        document.getElementById('searchForm').style.display = 'none';
         document.getElementById('logoutButton').style.display = 'none';
+        document.getElementById('workList').style.display = 'none';
         document.getElementById('authForms').style.display = 'block';
       });
 
       document.getElementById('addWorkForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const formData = new FormData(this);
+        const form = document.getElementById('addWorkForm');
+        const formData = new FormData(form);
 
         fetch('/works', {
           method: 'POST',
@@ -208,21 +207,26 @@
         })
         .then(response => response.json())
         .then(data => {
-          document.getElementById('formMessage').textContent = 'Darbas pridėtas sėkmingai';
-          document.getElementById('addWorkForm').reset();
-          searchWorks();
+          if (data.message) {
+            document.getElementById('formMessage').textContent = data.message;
+            document.getElementById('workTitle').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('photo').value = '';
+            searchWorks();
+          } else {
+            alert('Nepavyko pridėti darbo');
+          }
         })
-        .catch(error => {
-          console.error('Klaida:', error);
-          document.getElementById('formMessage').textContent = 'Nepavyko pridėti darbo';
-        });
+        .catch(error => console.error('Klaida:', error));
       });
 
       document.getElementById('editForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const formData = new FormData(this);
+        const workId = document.getElementById('editWorkId').value;
+        const form = document.getElementById('editForm');
+        const formData = new FormData(form);
 
-        fetch(`/works/${document.getElementById('editWorkId').value}`, {
+        fetch(`/works/${workId}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -231,58 +235,37 @@
         })
         .then(response => response.json())
         .then(data => {
-          document.getElementById('editFormMessage').textContent = 'Darbas atnaujintas sėkmingai';
-          document.getElementById('editForm').reset();
-          searchWorks();
-        })
-        .catch(error => {
-          console.error('Klaida:', error);
-          document.getElementById('editFormMessage').textContent = 'Nepavyko atnaujinti darbo';
-        });
-      });
-
-      document.getElementById('registerForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const username = document.getElementById('registerUsername').value;
-        const password = document.getElementById('registerPassword').value;
-
-        fetch('/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ username, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-          alert('Registracija sėkminga, galite prisijungti');
-          document.getElementById('registerUsername').value = '';
-          document.getElementById('registerPassword').value = '';
-          document.getElementById('registerForm').style.display = 'none';
-          document.getElementById('loginForm').style.display = 'block';
+          if (data.message) {
+            document.getElementById('editFormMessage').textContent = data.message;
+            searchWorks();
+            document.getElementById('editWorkForm').style.display = 'none';
+            document.getElementById('workForm').style.display = 'block';
+          } else {
+            alert('Nepavyko atnaujinti darbo');
+          }
         })
         .catch(error => console.error('Klaida:', error));
       });
-    });
 
-    function deleteWork(id) {
-      if (confirm('Ar tikrai norite ištrinti šį darbą?')) {
+      window.deleteWork = function(id) {
         fetch(`/works/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
-        .then(response => {
-          if (response.ok) {
-            searchWorks();
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            console.log('Darbas sėkmingai ištrintas');
+            searchWorks(); // Atnaujinti sąrašą po ištrynimo
           } else {
-            alert('Nepavyko ištrinti darbo');
+            alert('Klaida ištrinant darbą');
           }
         })
         .catch(error => console.error('Klaida:', error));
-      }
-    }
+      };
+    });
   </script>
 </body>
 </html>

@@ -122,7 +122,7 @@ a {
 
 .work-item {
   margin-bottom: 20px;
-  padding: 10px;
+  padding: var(--main-padding);
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f8f9fa;
@@ -135,20 +135,25 @@ a {
   margin-top: 10px;
 }
 
+#workForm, #editWorkForm {
+  margin-right: 10px;
+}
+
 @media (min-width: 768px) {
-  .container {
-    flex-direction: column;
+  .row-container {
+    display: flex;
+    flex-direction: row;
     justify-content: center;
+    width: 100%;
   }
 
-  .form-container,
-  .search-container {
-    width: 300px;
+  .search-container,
+  .works-container {
+    flex: 1;
     margin: var(--main-margin);
   }
 
-  .row-container {
-    flex-direction: row;
-    align-items: flex-start;
+  .works-container {
+    max-width: none;
   }
 }
