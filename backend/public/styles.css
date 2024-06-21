@@ -32,7 +32,6 @@ body {
 }
 
 .form-container,
-.search-container,
 .works-container {
   width: 100%;
   max-width: 350px;
@@ -51,6 +50,25 @@ body {
   margin: 0 0 var(--main-margin);
 }
 
+.search-container {
+  width: 200px;
+  
+  background-color: #FFF;
+  border: var(--main-border);
+  box-shadow: var(--main-box-shadow);
+  padding: var(--main-padding);
+  box-sizing: var(--main-box-sizing);
+  margin: var(--main-margin) 0;
+  margin-right: var(--margin-right);
+}
+
+.search-container input,
+.search-container button {
+  width: 100%;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+
 .form-container form label {
   display: block;
   margin-bottom: 5px;
@@ -58,9 +76,7 @@ body {
 
 .form-container form input,
 .form-container form textarea,
-.form-container form button,
-.search-container input,
-.search-container button {
+.form-container form button {
   width: 100%;
   margin-bottom: 15px;
   box-sizing: border-box;
