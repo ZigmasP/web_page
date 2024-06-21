@@ -71,7 +71,7 @@
           <button type="button" onclick="searchWorks()">Ieškoti</button>
         </div>
       </div>
-      <div id="workList" class="form-container">
+      <div id="workList" class="work-list-container">
         <h3>Rastas darbas</h3>
         <!-- Čia bus rodomi darbų sąrašas -->
       </div>
@@ -192,6 +192,51 @@
         document.getElementById('workList').style.display = 'none';
         document.getElementById('logoutButton').style.display = 'none';
         document.getElementById('authForms').style.display = 'block';
+      });
+
+      document.getElementById('addWorkForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        fetch('/works', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('formMessage').textContent = 'Darbas pridėtas sėkmingai';
+            event.target.reset();
+          } else {
+            document.getElementById('formMessage').textContent = 'Klaida pridedant darbą';
+          }
+        })
+        .catch(error => console.error('Klaida:', error));
+      });
+
+      document.getElementById('editForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        fetch(`/works/${document.getElementById('editWorkId').value}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('editFormMessage').textContent = 'Darbas atnaujintas sėkmingai';
+          } else {
+            document.getElementById('editFormMessage').textContent = 'Klaida atnaujinant darbą';
+          }
+        })
+        .catch(error => console.error('Klaida:', error));
       });
     });
   </script>

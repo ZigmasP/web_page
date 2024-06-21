@@ -4,6 +4,7 @@
   --main-text-color: #333;
   --main-padding: 10px;
   --main-margin: 10px;
+  --margin-right: 10px;
   --main-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --main-box-sizing: border-box;
   --main-border: none;
@@ -41,6 +42,7 @@ body {
   padding: var(--main-padding);
   box-sizing: var(--main-box-sizing);
   margin: var(--main-margin) 0;
+  margin-right: var(--margin-right);
 }
 
 .form-container h3,
@@ -120,7 +122,19 @@ a {
   width: 100%;
 }
 
+.work-list-container {
+  max-width: 180px;
+  margin-right: 10px;
+  background-color: #FFF;
+  border: var(--main-border);
+  box-shadow: var(--main-box-shadow);
+  padding: var(--main-padding);
+  box-sizing: var(--main-box-sizing);
+  margin: var(--main-margin) 0;
+}
+
 .work-item {
+  width: 135px;
   margin-bottom: 20px;
   padding: var(--main-padding);
   border: 1px solid #ccc;
@@ -129,16 +143,22 @@ a {
   text-align: center;
 }
 
+.work-item h4, .work-item p {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
 .work-item img {
   max-width: 100%;
   height: auto;
-  margin-top: 10px;
+  
+  margin-bottom: 10px;
 }
 
-#workForm, #editWorkForm,
-#searchForm {
-  margin-right: 10px;
+#editWorkForm {
+  margin-right: var(--margin-right);
 }
+
 
 @media (min-width: 768px) {
   .row-container {
