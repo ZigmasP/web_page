@@ -4,10 +4,11 @@
   --main-text-color: #333;
   --main-padding: 10px;
   --main-margin: 10px;
-  --margin-right: 10px;
+  --main-margin-right: 10px;
   --main-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --main-box-sizing: border-box;
   --main-border: none;
+  --main-max-width: 200px;
 }
 
 body {
@@ -41,7 +42,7 @@ body {
   padding: var(--main-padding);
   box-sizing: var(--main-box-sizing);
   margin: var(--main-margin) 0;
-  margin-right: var(--margin-right);
+  margin-right: var(--main-margin-right);
 }
 
 .form-container h3,
@@ -53,7 +54,7 @@ body {
 #searchForm {
   margin: var(--main-margin) 0;
   margin-right: var(--margin-right);
-  max-width: 200px;
+  max-width: var(--main-max-width);
   height: 100px;
   background-color: #FFF;
   border: var(--main-border);
@@ -78,7 +79,7 @@ body {
 .form-container form textarea,
 .form-container form button {
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   box-sizing: border-box;
 }
 
@@ -94,6 +95,7 @@ input#search {
 .form-container form button {
   display: block;
   width: 100%;
+  margin-top: 10px;
 }
 
 a {
@@ -139,7 +141,7 @@ a {
 }
 
 #workList {
-  max-width: 200px;
+  max-width: var(--main-max-width);
   margin-right: 10px;
   background-color: #FFF;
   border: var(--main-border);
@@ -150,8 +152,7 @@ a {
 }
 
 .work-item {
-  width: 135px;
-  margin-bottom: 20px;
+  max-width: 200px;
   padding: var(--main-padding);
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -172,7 +173,7 @@ a {
 }
 
 #editWorkForm {
-  margin-right: var(--margin-right);
+  margin-right: var(--main-margin-right);
 }
 
 
