@@ -45,8 +45,7 @@ body {
 }
 
 .form-container h3,
-#searchForm h3, 
-.work-list-container h3 {
+#searchForm h3, #workList h3 {
   text-align: center;
   margin: 0 0 var(--main-margin);
 }
@@ -139,7 +138,7 @@ a {
   width: 100%;
 }
 
-.work-list-container {
+#workList {
   max-width: 200px;
   margin-right: 10px;
   background-color: #FFF;
