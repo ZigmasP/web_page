@@ -17,7 +17,7 @@
 <body>
   <div class="container">
     <div class="form-container" id="authForms">
-      <form id="loginForm" method="post" action="/login">
+      <form id="loginForm">
         <h3>Prisijungimas</h3>
         <label for="loginUsername">Vartotojas:</label>
         <input type="text" id="loginUsername" name="username" required>
@@ -38,7 +38,7 @@
     </div>
     <div id="formsRow" class="row-container">
       <div id="workForm" class="form-container">
-        <form id="addWorkForm" method="post" action="works" enctype="multipart/form-data">
+        <form id="addWorkForm" enctype="multipart/form-data">
           <h3>Pridėti darbą</h3>
           <label for="workTitle">Pavadinimas:</label>
           <input type="text" id="workTitle" name="title" required>
@@ -51,7 +51,7 @@
         </form>
       </div>
       <div id="editWorkForm" class="form-container">
-        <form id="editForm" method="post" action="works" enctype="multipart/form-data">
+        <form id="editForm" enctype="multipart/form-data">
           <h3>Redaguoti darbą</h3>
           <input type="hidden" id="editWorkId" name="workId">
           <label for="editWorkTitle">Pavadinimas:</label>
@@ -81,67 +81,6 @@
     <button id="logoutButton">Atsijungti</button>
   </div>
   <script>
-    function searchWorks() {
-      const searchQuery = document.getElementById('search').value.toLowerCase();
-
-      fetch(`/works`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        const workList = document.getElementById('workList');
-        workList.innerHTML = '';
-
-        const filteredWorks = data.filter(work => 
-          work.title.toLowerCase().includes(searchQuery) ||
-          work.description.toLowerCase().includes(searchQuery)
-        );
-
-        if (filteredWorks.length > 0) {
-          document.getElementById('workList').style.display = 'block';
-          filteredWorks.forEach(work => {
-            const workItem = document.createElement('div');
-            workItem.className = 'work-item';
-            workItem.innerHTML = `
-              <h4>${work.title}</h4>
-              <p>${work.description}</p>
-              <img src="/uploads/${work.photo}" alt="${work.title}">
-              <button onclick="editWork(${work.id})">Redaguoti</button>
-              <button onclick="deleteWork(${work.id})">Ištrinti</button>
-            `;
-            workList.appendChild(workItem);
-          });
-        } else {
-          document.getElementById('workList').style.display = 'none';
-          const noResult = document.createElement('p');
-          noResult.textContent = 'Nerasta darbų pagal paiešką.';
-          workList.appendChild(noResult);
-        }
-      })
-      .catch(error => console.error('Klaida:', error));
-    }
-
-    function editWork(id) {
-      fetch(`/works/${id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      .then(response => response.json())
-      .then(work => {
-        document.getElementById('editWorkId').value = work.id;
-        document.getElementById('editWorkTitle').value = work.title;
-        document.getElementById('editDescription').value = work.description;
-        document.getElementById('editWorkForm').style.display = 'block';
-        document.getElementById('workForm').style.display = 'none';
-      })
-      .catch(error => console.error('Klaida:', error));
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('showRegisterForm').addEventListener('click', function(e) {
         e.preventDefault();
@@ -174,13 +113,9 @@
             document.getElementById('authForms').style.display = 'none';
             document.getElementById('workForm').style.display = 'block';
             document.getElementById('searchForm').style.display = 'block';
-            document.getElementById('workList').style.display = 'block';
             document.getElementById('logoutButton').style.display = 'block';
-
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
           } else {
-            alert('Neteisingi prisijungimo duomenys');
+            alert('Prisijungimo klaida. Patikrinkite savo duomenis ir bandykite dar kartą.');
           }
         })
         .catch(error => console.error('Klaida:', error));
@@ -200,26 +135,32 @@
         })
         .then(response => response.json())
         .then(data => {
-          if (data.success) {
+          if (data.message) {
+            alert('Registracija sėkminga! Dabar galite prisijungti.');
             document.getElementById('registerForm').style.display = 'none';
             document.getElementById('loginForm').style.display = 'block';
-            alert('Registracija sėkminga! Dabar galite prisijungti.');
           } else {
-            alert('Registracijos klaida');
+            alert('Registracijos klaida. Bandykite dar kartą.');
           }
         })
         .catch(error => console.error('Klaida:', error));
       });
 
+      document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        document.getElementById('authForms').style.display = 'block';
+        document.getElementById('workForm').style.display = 'none';
+        document.getElementById('searchForm').style.display = 'none';
+        document.getElementById('workList').style.display = 'none';
+        document.getElementById('logoutButton').style.display = 'none';
+      });
+
       document.getElementById('addWorkForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const title = document.getElementById('workTitle').value;
-        const description = document.getElementById('description').value;
-        const photo = document.getElementById('photo').files[0];
         const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('photo', photo);
+        formData.append('title', document.getElementById('workTitle').value);
+        formData.append('description', document.getElementById('description').value);
+        formData.append('photo', document.getElementById('photo').files[0]);
 
         fetch('/works', {
           method: 'POST',
@@ -230,14 +171,15 @@
         })
         .then(response => response.json())
         .then(data => {
-          if (data.success) {
-            document.getElementById('workTitle').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('photo').value = '';
-            document.getElementById('formMessage').textContent = 'Darbas sėkmingai pridėtas!';
-            searchWorks(); // Refresh the work list
+          const formMessage = document.getElementById('formMessage');
+          if (data.message) {
+            formMessage.textContent = 'Darbas sėkmingai pridėtas!';
+            formMessage.style.color = 'green';
+            document.getElementById('addWorkForm').reset();
+            searchWorks();
           } else {
-            document.getElementById('formMessage').textContent = 'Įvyko klaida pridedant darbą.';
+            formMessage.textContent = 'Nepavyko pridėti darbo.';
+            formMessage.style.color = 'red';
           }
         })
         .catch(error => console.error('Klaida:', error));
@@ -246,14 +188,12 @@
       document.getElementById('editForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const workId = document.getElementById('editWorkId').value;
-        const title = document.getElementById('editWorkTitle').value;
-        const description = document.getElementById('editDescription').value;
-        const photo = document.getElementById('editPhoto').files[0];
         const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        if (photo) {
-          formData.append('photo', photo);
+        formData.append('title', document.getElementById('editWorkTitle').value);
+        formData.append('description', document.getElementById('editDescription').value);
+
+        if (document.getElementById('editPhoto').files.length > 0) {
+          formData.append('photo', document.getElementById('editPhoto').files[0]);
         }
 
         fetch(`/works/${workId}`, {
@@ -265,26 +205,61 @@
         })
         .then(response => response.json())
         .then(data => {
-          if (data.success) {
-            document.getElementById('editFormMessage').textContent = 'Darbas sėkmingai atnaujintas!';
-            searchWorks(); // Refresh the work list
+          const editFormMessage = document.getElementById('editFormMessage');
+          if (data.message) {
+            editFormMessage.textContent = 'Darbas sėkmingai atnaujintas!';
+            editFormMessage.style.color = 'green';
+            document.getElementById('editForm').reset();
+            searchWorks();
           } else {
-            document.getElementById('editFormMessage').textContent = 'Įvyko klaida atnaujinant darbą.';
+            editFormMessage.textContent = 'Nepavyko atnaujinti darbo.';
+            editFormMessage.style.color = 'red';
           }
         })
         .catch(error => console.error('Klaida:', error));
       });
-
-      document.getElementById('logoutButton').addEventListener('click', function() {
-        localStorage.removeItem('token');
-        document.getElementById('authForms').style.display = 'block';
-        document.getElementById('workForm').style.display = 'none';
-        document.getElementById('editWorkForm').style.display = 'none';
-        document.getElementById('searchForm').style.display = 'none';
-        document.getElementById('workList').style.display = 'none';
-        document.getElementById('logoutButton').style.display = 'none';
-      });
     });
+
+    function searchWorks() {
+      const searchQuery = document.getElementById('search').value;
+
+      fetch(`/works?search=${encodeURIComponent(searchQuery)}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const workList = document.getElementById('workList');
+        workList.innerHTML = '';
+        if (data.length > 0) {
+          data.forEach(work => {
+            const workItem = document.createElement('div');
+            workItem.classList.add('work-item');
+            workItem.innerHTML = `
+              <h4>${work.title}</h4>
+              <p>${work.description}</p>
+              <img src="${work.photo}" alt="${work.title}">
+              <button onclick="showEditForm(${work.id}, '${work.title}', '${work.description}', '${work.photo}')">Redaguoti</button>
+              <button onclick="deleteWork(${work.id})">Ištrinti</button>
+            `;
+            workList.appendChild(workItem);
+          });
+          workList.style.display = 'block';
+        } else {
+          workList.innerHTML = '<p>Darbas nerastas.</p>';
+        }
+      })
+      .catch(error => console.error('Klaida:', error));
+    }
+
+    function showEditForm(id, title, description, photo) {
+      document.getElementById('workForm').style.display = 'none';
+      document.getElementById('editWorkForm').style.display = 'block';
+      document.getElementById('editWorkId').value = id;
+      document.getElementById('editWorkTitle').value = title;
+      document.getElementById('editDescription').value = description;
+    }
 
     function deleteWork(id) {
       fetch(`/works/${id}`, {
@@ -295,10 +270,10 @@
       })
       .then(response => response.json())
       .then(data => {
-        if (data.success) {
-          searchWorks(); // Refresh the work list
+        if (data.message) {
+          searchWorks();
         } else {
-          console.error('Klaida ištrinant darbą:', data.message);
+          alert('Nepavyko ištrinti darbo.');
         }
       })
       .catch(error => console.error('Klaida:', error));
