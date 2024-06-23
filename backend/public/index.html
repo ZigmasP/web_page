@@ -60,10 +60,12 @@
           <textarea id="editDescription" name="description" required></textarea>
           <label for="editPhoto">Nuotrauka:</label>
           <input type="file" id="editPhoto" name="photo">
+          <img id="editPhotoPreview" src="" alt="Work Image" style="max-width: 100px; max-height: 100px;">
           <button type="submit">Išsaugoti</button>
           <p id="editFormMessage"></p>
           <p>Grįžti prie pridėjimo formos? <a href="#" id="showAddWorkForm">čia</a>.</p>
         </form>
+        
       </div>
       <div id="searchAndWorkListContainer" class="search-and-worklist-container">
         <div id="searchForm" class="search-form-container">
@@ -191,8 +193,7 @@
         const formData = new FormData();
         formData.append('title', document.getElementById('editWorkTitle').value);
         formData.append('description', document.getElementById('editDescription').value);
-
-        if (document.getElementById('editPhoto').files.length > 0) {
+        if (document.getElementById('editPhoto').files[0]) {
           formData.append('photo', document.getElementById('editPhoto').files[0]);
         }
 
@@ -228,48 +229,50 @@
     });
 
     function searchWorks() {
-      const searchQuery = document.getElementById('search').value;
-
-      fetch(`/works?search=${encodeURIComponent(searchQuery)}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        const workList = document.getElementById('workList');
-        workList.innerHTML = '';
-        if (data.length > 0) {
-          data.forEach(work => {
-            const workItem = document.createElement('div');
-            workItem.classList.add('work-item');
-            workItem.innerHTML = `
-              <h4>${work.title}</h4>
-              <p>${work.description}</p>
-              <img src="${work.photo}" alt="${work.title}">
-              <button onclick="showEditForm(${work.id}, '${work.title}', '${work.description}', '${work.photo}')">Redaguoti</button>
-              <button onclick="deleteWork(${work.id})">Ištrinti</button>
-            `;
-            workList.appendChild(workItem);
-          });
-          workList.style.display = 'block';
-        } else {
-          workList.innerHTML = '<p>Darbas nerastas.</p>';
-        }
-      })
-      .catch(error => console.error('Klaida:', error));
+  const searchQuery = document.getElementById('search').value;
+  fetch(`/works?search=${searchQuery}`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const workList = document.getElementById('workList');
+    workList.style.display = 'block';
+    workList.innerHTML = '';
 
-    function showEditForm(id, title, description, photo) {
-      document.getElementById('workForm').style.display = 'none';
-      document.getElementById('editWorkForm').style.display = 'block';
-      document.getElementById('editWorkId').value = id;
-      document.getElementById('editWorkTitle').value = title;
-      document.getElementById('editDescription').value = description;
+    if (data.length > 0) {
+      const work = data[0];
+      const workItem = document.createElement('div');
+      workItem.innerHTML = `
+        <h4>${work.title}</h4>
+        <p>${work.description}</p>
+        <img src="/uploads/${work.photo}" alt="${work.title}">
+        <button onclick="editWork('${work.id}', '${work.title}', '${work.description}', '/uploads/${work.photo}')">Redaguoti</button>
+        <button onclick="deleteWork('${work.id}')">Ištrinti</button>
+      `;
+      workList.appendChild(workItem);
+      document.getElementById('search').value = ''; // Clear the search field
+    } else {
+      workList.innerHTML = '<p>Darbas nerastas.</p>';
     }
+  })
+  .catch(error => console.error('Klaida:', error));
+}
 
-    function deleteWork(id) {
-      fetch(`/works/${id}`, {
+
+function editWork(workId, title, description, photo) {
+  document.getElementById('editWorkId').value = workId;
+  document.getElementById('editWorkTitle').value = title;
+  document.getElementById('editDescription').value = description;
+  document.getElementById('editPhotoPreview').src = photo;
+  document.getElementById('workForm').style.display = 'none';
+  document.getElementById('editWorkForm').style.display = 'block';
+}
+
+
+    function deleteWork(workId) {
+      fetch(`/works/${workId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -278,7 +281,8 @@
       .then(response => response.json())
       .then(data => {
         if (data.message) {
-          searchWorks();
+          alert('Darbas sėkmingai ištrintas!');
+          searchWorks(); // Refresh the work list after deletion
         } else {
           alert('Nepavyko ištrinti darbo.');
         }
