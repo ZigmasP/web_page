@@ -113,6 +113,7 @@
         .then(data => {
           if (data.token) {
             localStorage.setItem('token', data.token);
+            document.getElementById('loginForm').reset(); // Clear login form
             document.getElementById('authForms').style.display = 'none';
             document.getElementById('workForm').style.display = 'block';
             document.getElementById('searchForm').style.display = 'block';
@@ -229,47 +230,45 @@
     });
 
     function searchWorks() {
-  const searchQuery = document.getElementById('search').value;
-  fetch(`/works?search=${searchQuery}`, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
+      const searchQuery = document.getElementById('search').value;
+      fetch(`/works?search=${searchQuery}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const workList = document.getElementById('workList');
+        workList.style.display = 'block';
+        workList.innerHTML = '';
+
+        if (data.length > 0) {
+          const work = data[0];
+          const workItem = document.createElement('div');
+          workItem.innerHTML = `
+            <h4>${work.title}</h4>
+            <p>${work.description}</p>
+            <img src="/uploads/${work.photo}" alt="${work.title}">
+            <button onclick="editWork('${work.id}', '${work.title}', '${work.description}', '/uploads/${work.photo}')">Redaguoti</button>
+            <button onclick="deleteWork('${work.id}')">Ištrinti</button>
+          `;
+          workList.appendChild(workItem);
+          document.getElementById('search').value = ''; // Clear the search field
+        } else {
+          workList.innerHTML = '<p>Darbas nerastas.</p>';
+        }
+      })
+      .catch(error => console.error('Klaida:', error));
     }
-  })
-  .then(response => response.json())
-  .then(data => {
-    const workList = document.getElementById('workList');
-    workList.style.display = 'block';
-    workList.innerHTML = '';
 
-    if (data.length > 0) {
-      const work = data[0];
-      const workItem = document.createElement('div');
-      workItem.innerHTML = `
-        <h4>${work.title}</h4>
-        <p>${work.description}</p>
-        <img src="/uploads/${work.photo}" alt="${work.title}">
-        <button onclick="editWork('${work.id}', '${work.title}', '${work.description}', '/uploads/${work.photo}')">Redaguoti</button>
-        <button onclick="deleteWork('${work.id}')">Ištrinti</button>
-      `;
-      workList.appendChild(workItem);
-      document.getElementById('search').value = ''; // Clear the search field
-    } else {
-      workList.innerHTML = '<p>Darbas nerastas.</p>';
+    function editWork(workId, title, description, photo) {
+      document.getElementById('editWorkId').value = workId;
+      document.getElementById('editWorkTitle').value = title;
+      document.getElementById('editDescription').value = description;
+      document.getElementById('editPhotoPreview').src = photo;
+      document.getElementById('workForm').style.display = 'none';
+      document.getElementById('editWorkForm').style.display = 'block';
     }
-  })
-  .catch(error => console.error('Klaida:', error));
-}
-
-
-function editWork(workId, title, description, photo) {
-  document.getElementById('editWorkId').value = workId;
-  document.getElementById('editWorkTitle').value = title;
-  document.getElementById('editDescription').value = description;
-  document.getElementById('editPhotoPreview').src = photo;
-  document.getElementById('workForm').style.display = 'none';
-  document.getElementById('editWorkForm').style.display = 'block';
-}
-
 
     function deleteWork(workId) {
       fetch(`/works/${workId}`, {
