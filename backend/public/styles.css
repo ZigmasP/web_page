@@ -51,6 +51,13 @@ body {
   margin: 0 0 var(--main-margin);
 }
 
+.row-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
 #searchForm {
   margin: var(--main-margin) 0;
   margin-right: var(--margin-right);
@@ -66,8 +73,27 @@ body {
 .search-form-container input,
 .search-form-container button {
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   box-sizing: border-box;
+}
+
+.search-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-group input {
+  flex: 1;
+  width: auto;
+  margin-bottom: 5px;
+}
+
+.search-group button {
+  flex-shrink: 0;
+  width: auto;
+  margin-bottom: 5px;
 }
 
 .form-container form label {
@@ -116,30 +142,6 @@ a {
   z-index: 1000;
 }
 
-.search-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.search-group input {
-  flex: 1;
-  width: auto;
-}
-
-.search-group button {
-  flex-shrink: 0;
-  width: auto;
-}
-
-.row-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-}
-
 #workList {
   max-width: var(--main-max-width);
   margin-right: 10px;
@@ -151,31 +153,18 @@ a {
   margin: var(--main-margin) 0;
 }
 
-.work-item {
-  max-width: 200px;
-  padding: var(--main-padding);
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-  text-align: center;
-}
-
-.work-item h4, .work-item p {
+#saveButton {
   margin: 0;
-  margin-bottom: 10px;
 }
 
-.work-item img {
-  max-width: 100%;
-  height: auto;
-  
-  margin-bottom: 10px;
+h4, p {
+  margin: 0;
 }
 
-#editWorkForm {
-  margin-right: var(--main-margin-right);
+img {
+  margin: 10px 0;
+  border-radius: 5px;
 }
-
 
 @media (min-width: 768px) {
   .row-container {
