@@ -44,7 +44,7 @@
           <input type="text" id="workTitle" name="title" required>
           <label for="description">Aprašymas:</label>
           <textarea id="description" name="description" required></textarea>
-          <label for="photo">Nuotrauka</label>
+          <label for="photo">Nuotrauka:</label>
           <input type="file" id="photo" name="photo" required>
           <button type="submit">Pridėti darbą</button>
           <p id="formMessage"></p>
@@ -58,10 +58,11 @@
           <input type="text" id="editWorkTitle" name="title" required>
           <label for="editDescription">Aprašymas:</label>
           <textarea id="editDescription" name="description" required></textarea>
-          <label for="editPhoto">Nuotrauka</label>
+          <label for="editPhoto">Nuotrauka:</label>
           <input type="file" id="editPhoto" name="photo">
           <button type="submit">Išsaugoti</button>
           <p id="editFormMessage"></p>
+          <p>Grįžti prie pridėjimo formos? <a href="#" id="showAddWorkForm">čia</a>.</p>
         </form>
       </div>
       <div id="searchAndWorkListContainer" class="search-and-worklist-container">
@@ -176,7 +177,6 @@
             formMessage.textContent = 'Darbas sėkmingai pridėtas!';
             formMessage.style.color = 'green';
             document.getElementById('addWorkForm').reset();
-            searchWorks();
           } else {
             formMessage.textContent = 'Nepavyko pridėti darbo.';
             formMessage.style.color = 'red';
@@ -210,13 +210,20 @@
             editFormMessage.textContent = 'Darbas sėkmingai atnaujintas!';
             editFormMessage.style.color = 'green';
             document.getElementById('editForm').reset();
-            searchWorks();
+            document.getElementById('editWorkForm').style.display = 'none';
+            document.getElementById('workForm').style.display = 'block';
           } else {
             editFormMessage.textContent = 'Nepavyko atnaujinti darbo.';
             editFormMessage.style.color = 'red';
           }
         })
         .catch(error => console.error('Klaida:', error));
+      });
+
+      document.getElementById('showAddWorkForm').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('editWorkForm').style.display = 'none';
+        document.getElementById('workForm').style.display = 'block';
       });
     });
 
