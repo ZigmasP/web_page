@@ -201,11 +201,75 @@
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            document.getElementById('registerForm').reset();
             document.getElementById('registerForm').style.display = 'none';
             document.getElementById('loginForm').style.display = 'block';
+            alert('Registracija sėkminga! Dabar galite prisijungti.');
           } else {
             alert('Registracijos klaida');
+          }
+        })
+        .catch(error => console.error('Klaida:', error));
+      });
+
+      document.getElementById('addWorkForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const title = document.getElementById('workTitle').value;
+        const description = document.getElementById('description').value;
+        const photo = document.getElementById('photo').files[0];
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('photo', photo);
+
+        fetch('/works', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('workTitle').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('photo').value = '';
+            document.getElementById('formMessage').textContent = 'Darbas sėkmingai pridėtas!';
+            searchWorks(); // Refresh the work list
+          } else {
+            document.getElementById('formMessage').textContent = 'Įvyko klaida pridedant darbą.';
+          }
+        })
+        .catch(error => console.error('Klaida:', error));
+      });
+
+      document.getElementById('editForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const workId = document.getElementById('editWorkId').value;
+        const title = document.getElementById('editWorkTitle').value;
+        const description = document.getElementById('editDescription').value;
+        const photo = document.getElementById('editPhoto').files[0];
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        if (photo) {
+          formData.append('photo', photo);
+        }
+
+        fetch(`/works/${workId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('editFormMessage').textContent = 'Darbas sėkmingai atnaujintas!';
+            searchWorks(); // Refresh the work list
+          } else {
+            document.getElementById('editFormMessage').textContent = 'Įvyko klaida atnaujinant darbą.';
           }
         })
         .catch(error => console.error('Klaida:', error));
@@ -215,11 +279,30 @@
         localStorage.removeItem('token');
         document.getElementById('authForms').style.display = 'block';
         document.getElementById('workForm').style.display = 'none';
+        document.getElementById('editWorkForm').style.display = 'none';
         document.getElementById('searchForm').style.display = 'none';
         document.getElementById('workList').style.display = 'none';
         document.getElementById('logoutButton').style.display = 'none';
       });
     });
+
+    function deleteWork(id) {
+      fetch(`/works/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          searchWorks(); // Refresh the work list
+        } else {
+          console.error('Klaida ištrinant darbą:', data.message);
+        }
+      })
+      .catch(error => console.error('Klaida:', error));
+    }
   </script>
 </body>
 </html>
