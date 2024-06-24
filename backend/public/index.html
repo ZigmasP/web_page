@@ -71,7 +71,7 @@
         <div id="searchForm" class="search-form-container">
           <h3>Paieška</h3>
           <div class="search-group">
-            <input type="text" id="search" name="search" placeholder="Ieškoti...">
+            <input type="text" id="search" name="search" placeholder="Ieškoti..." autocomplete="off">
             <button type="button" onclick="searchWorks()">Ieškoti</button>
           </div>
         </div>
@@ -156,6 +156,7 @@
         document.getElementById('workForm').style.display = 'none';
         document.getElementById('searchForm').style.display = 'none';
         document.getElementById('workList').style.display = 'none';
+        document.getElementById('editWorkForm').style.display = 'none';
         document.getElementById('logoutButton').style.display = 'none';
       });
 
