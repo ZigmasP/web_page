@@ -131,8 +131,9 @@ app.post('/works', authenticateToken, upload.single('photo'), async (req, res, n
 
 app.get('/works', async (req, res, next) => {
   try {
-    const query = 'SELECT * FROM works';
-    const [results] = await pool.query(query);
+    const search = req.query.search ? `%${req.query.search}%` : '%';
+    const query = 'SELECT * FROM works WHERE title LIKE ? OR description LIKE ?';
+    const [results] = await pool.query(query, [search, search]);
     res.status(200).json(results);
   } catch (err) {
     console.error(err);
@@ -145,10 +146,16 @@ app.put('/works/:id', authenticateToken, upload.single('photo'), async (req, res
   try {
     const workId = req.params.id;
     const { title, description } = req.body;
-    const photo = req.file ? req.file.filename : req.body.existingPhoto;
+    let photo = req.body.existingPhoto;
+
+    if (req.file) {
+      photo = req.file.filename;
+    }
+
     if (!photo) {
       return res.status(400).json({ error: 'Nuotrauka privaloma' });
     }
+
     const query = 'UPDATE works SET title = ?, description = ?, photo = ? WHERE id = ?';
     const [results] = await pool.query(query, [title, description, photo, workId]);
     res.status(200).json({ message: 'Darbas sėkmingai atnaujintas', affectedRows: results.affectedRows });
