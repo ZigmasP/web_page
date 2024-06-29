@@ -65,7 +65,6 @@
           <p id="editFormMessage"></p>
           <p>Grįžti prie pridėjimo formos? <a href="#" id="showAddWorkForm">čia</a>.</p>
         </form>
-        
       </div>
       <div id="searchAndWorkListContainer" class="search-and-worklist-container">
         <div id="searchForm" class="search-form-container">
@@ -269,6 +268,7 @@
       document.getElementById('editPhotoPreview').src = photo;
       document.getElementById('workForm').style.display = 'none';
       document.getElementById('editWorkForm').style.display = 'block';
+      document.getElementById('workList').style.display = 'none'; // Pridedama eilutė paslėpti workList
     }
 
     function deleteWork(workId) {
