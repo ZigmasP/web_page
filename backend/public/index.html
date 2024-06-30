@@ -47,7 +47,7 @@
           <label for="photo">Nuotrauka:</label>
           <input type="file" id="photo" name="photo" required>
           <button type="submit">Pridėti darbą</button>
-          <p id="formMessage"></p>
+          <p id="formMessage" class="form-message"></p>
         </form>
       </div>
       <div id="editWorkForm" class="form-container">
@@ -63,7 +63,7 @@
           <input type="file" id="editPhoto" name="photo">
           <img id="editPhotoPreview" src="" alt="Work Image" style="max-width: 100px; max-height: 100px;">
           <button id="saveButton" type="submit">Išsaugoti</button>
-          <p id="editFormMessage"></p>
+          <p id="editFormMessage" class="form-message"></p>
           <p>Grįžti prie pridėjimo formos? <a href="#" id="showAddWorkForm">čia</a>.</p>
         </form>
       </div>
@@ -181,6 +181,9 @@
             formMessage.textContent = 'Darbas sėkmingai pridėtas!';
             formMessage.style.color = 'green';
             document.getElementById('addWorkForm').reset();
+            setTimeout(() => {
+              formMessage.textContent = '';
+            }, 1000);
           } else {
             formMessage.textContent = 'Nepavyko pridėti darbo.';
             formMessage.style.color = 'red';
@@ -217,6 +220,9 @@
             document.getElementById('editForm').reset();
             document.getElementById('editWorkForm').style.display = 'none';
             document.getElementById('workForm').style.display = 'block';
+            setTimeout(() => {
+              editFormMessage.textContent = '';
+            }, 1000);
           } else {
             editFormMessage.textContent = 'Nepavyko atnaujinti darbo.';
             editFormMessage.style.color = 'red';
