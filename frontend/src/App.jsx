@@ -27,7 +27,6 @@ const App = () => {
     setIsMenuOpen(false);
   }, []);
 
-
   return (
     <div>
       <header>
@@ -35,7 +34,7 @@ const App = () => {
           <img src={logo} alt="Zigmaswebdev Logo" className="logo" loading="lazy" />
         </div>
         <nav className={isMenuOpen ? "open" : ""} aria-label="Main Navigation">
-          <ul>
+          <ul className={isMenuOpen ? "open" : ""}>
             <li>
               <a href="#home" onClick={closeMenu}>Pagrindinis</a>
             </li>
@@ -140,7 +139,7 @@ const App = () => {
       </section>
       
       <footer className="footer-container">
-        <p>&copy; 2024 Zigmas Petrauskas. Visos teisės saugomos.</p>
+        <p>&copy; 2024 zigmaswebdev.lt. Visos teisės saugomos.</p>
       </footer>
     </div>
   );

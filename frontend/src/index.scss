@@ -1,7 +1,8 @@
 :root {
   --main-font-family: 'Montserrat', sans-serif;
   --main-bg-color: black;
-  
+  --menu-toggle-bg-color: black;
+  --menu-toggle-color: white;
 }
 
 body {
@@ -37,6 +38,11 @@ header {
   border: 2px solid #0e76a8;
 }
 
+nav {
+  display: flex;
+  align-items: center;
+}
+
 nav ul {
   display: flex;
   list-style: none;
@@ -56,13 +62,18 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-  color: #0e76a8;
+  color: lightgrey;
 }
 
 .menu-toggle {
   display: none;
   font-size: 1.5rem;
   cursor: pointer;
+  background-color: var(--menu-toggle-bg-color);
+  color: var(--menu-toggle-color);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
 }
 
 .hero {
@@ -195,5 +206,36 @@ nav ul li a:hover {
   
   .contact-info {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobiliems įrenginiams */
+@media (max-width: 600px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  nav ul {
+    display: none;
+    flex-direction: column;
+    background-color: transparent;
+    position: absolute;
+    top: 60px;
+    right: 0; /* Pakeista vieta */
+    width: 150px; /* Nustatytas plotis */
+  }
+
+  nav ul.open {
+    display: flex;
+  }
+
+  nav ul li {
+    margin: 0;
+    text-align: right; /* Teksto lygiavimas kairėje */
+  }
+
+  nav ul li a {
+    display: block;
+    margin: 0;
   }
 }
