@@ -3,6 +3,9 @@
   --main-bg-color: black;
   --menu-toggle-bg-color: black;
   --menu-toggle-color: white;
+  --nav-bg-color-mobile: white; /* New variable for mobile nav background */
+  --nav-link-color-mobile: rgba(0, 0, 0, 0.8); /* New variable for mobile nav link color */
+  --nav-link-hover-color-mobile: rgba(0, 0, 0, 0.8); /* New variable for mobile nav link hover color */
 }
 
 body {
@@ -218,11 +221,11 @@ nav ul li a:hover {
   nav ul {
     display: none;
     flex-direction: column;
-    background-color: transparent;
+    background-color: var(--nav-bg-color-mobile); /* Set mobile nav background color */
     position: absolute;
     top: 60px;
-    right: 0; /* Pakeista vieta */
-    width: 150px; /* Nustatytas plotis */
+    right: 0;
+    width: 150px;
   }
 
   nav ul.open {
@@ -231,11 +234,16 @@ nav ul li a:hover {
 
   nav ul li {
     margin: 0;
-    text-align: right; /* Teksto lygiavimas kairėje */
+    text-align: right;
   }
 
   nav ul li a {
     display: block;
     margin: 0;
+    color: var(--nav-link-color-mobile); /* Set mobile nav link color */
+  }
+
+  nav ul li a:hover {
+    color: var(--nav-link-hover-color-mobile); /* Set mobile nav link hover color */
   }
 }
