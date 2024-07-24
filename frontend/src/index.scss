@@ -13,7 +13,7 @@
     transform: rotate(0deg);
   }
   100% {
-    transform: rotate(720deg); // 2 pilni apsisusikimai (2 x 360 laipsniai) //
+    transform: rotate(720deg); // 2 pilni apsisukimai (2 x 360 laipsniai) //
   }
 }
 
@@ -22,10 +22,21 @@
     opacity: 0;
     transform: translateY(-50px);
   }
-100% {
-  opacity: 1;
-  transform: translate(0);
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
 }
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 body {
@@ -60,13 +71,13 @@ header {
   width: 50px;
   border-radius: 50%;
   border: 2px solid #0e76a8;
-  animation: spin 2s ease-in-out, fall 0.5s ease-in-out forwards 0.1s;
+  animation: spin 2s ease-in-out;
 }
 
 nav {
   display: flex;
   align-items: center;
-  animation: fall 0.5s ease-in-out forwards 0.2s;
+  
 }
 
 nav ul {
@@ -74,7 +85,7 @@ nav ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  animation: fall 0.5s ease-in-out forwards 0.3s;
+  
 }
 
 nav ul li {
@@ -86,7 +97,7 @@ nav ul li a {
   text-decoration: none;
   padding: 0.5rem;
   transition: color 0.3s;
-  animation: fall 0.5s ease-in-out forwards 0.4s;
+  
 }
 
 nav ul li a:hover {
@@ -102,7 +113,7 @@ nav ul li a:hover {
   border: none;
   padding: 0.5rem;
   border-radius: 0.25rem;
-  animation: fall 0.5s ease-in-out forwards 0.5s;
+  
 }
 
 .hero {
@@ -111,6 +122,19 @@ nav ul li a:hover {
   background: #0e76a8;
   color: white;
   animation: fall 0.5s ease-in-out forwards 0.6s;
+}
+
+.contact-box {
+  border: 2px solid white;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: inline-block;
+  animation: slide-in 1s ease-in-out;
+}
+
+.contact-box p {
+  margin: 0;
 }
 
 .about-container {

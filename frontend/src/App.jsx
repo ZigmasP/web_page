@@ -9,6 +9,7 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [works, setWorks] = useState([]);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [showContactBox, setShowContactBox] = useState(false);
   
   useEffect(() => {
     axios.get('http://127.0.0.1:3000/works')
@@ -18,10 +19,18 @@ const App = () => {
       .catch((error) => {
         console.error('Klaida gaunant darbus:', error);
       });
-
-      window.addEventListener('load', () => {
-        setIsPageLoaded(true);
-      });
+  }, []);
+  
+  useEffect(() => {
+    const handlePageLoad = () => {
+      setIsPageLoaded(true);
+      setTimeout(() => {
+        setShowContactBox(true);
+      }, 3000); // Show contact box after 3 seconds
+    };
+    
+    window.addEventListener('load', handlePageLoad);
+    return () => window.removeEventListener('load', handlePageLoad);
   }, []);
   
   const toggleMenu = useCallback(() => {
@@ -62,7 +71,7 @@ const App = () => {
       <section id="home" className="hero">
         <h1>Sveiki atvykę į ZigmasWebDev.lt</h1>
         <p>Kuriu modernias svetaines ir programas</p>
-        {isPageLoaded && (
+        {showContactBox && (
           <div className="contact-box">
             <p>Susisiekime. Tel. nr.: +37060627573</p>
           </div>
