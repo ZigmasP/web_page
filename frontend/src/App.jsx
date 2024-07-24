@@ -8,6 +8,7 @@ import "./index.scss";
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [works, setWorks] = useState([]);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
   
   useEffect(() => {
     axios.get('http://127.0.0.1:3000/works')
@@ -16,6 +17,10 @@ const App = () => {
       })
       .catch((error) => {
         console.error('Klaida gaunant darbus:', error);
+      });
+
+      window.addEventListener('load', () => {
+        setIsPageLoaded(true);
       });
   }, []);
   
@@ -57,6 +62,11 @@ const App = () => {
       <section id="home" className="hero">
         <h1>Sveiki atvykę į ZigmasWebDev.lt</h1>
         <p>Kuriu modernias svetaines ir programas</p>
+        {isPageLoaded && (
+          <div className="contact-box">
+            <p>Susisiekime. Tel. nr.: +37060627573</p>
+          </div>
+        )}
       </section>
 
       <section id="about" className="about-container">
