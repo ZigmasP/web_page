@@ -26,7 +26,7 @@ const App = () => {
       if (document.readyState === 'complete') {
         setTimeout(() => {
           setShowContactBox(true);
-        }, 2300); // Show contact box after 3 seconds
+        }, 2300); // Show contact box after 2.3 seconds
       }
     };
 
@@ -58,12 +58,19 @@ const App = () => {
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Zigmas Petrauskas" />
 
-      
+        {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="http://www.zigmaswebdev.lt/" />
         <meta property="og:title" content="Zigmas WebDev - Modernios Svetainės ir Programos" />
         <meta property="og:description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
         <meta property="og:image" content="http://www.zigmaswebdev.lt/assets/logo.webp" />
+
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="http://www.zigmaswebdev.lt/" />
+        <meta property="twitter:title" content="Zigmas WebDev - Modernios Svetainės ir Programos" />
+        <meta property="twitter:description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
+        <meta property="twitter:image" content="http://www.zigmaswebdev.lt/assets/logo.webp" />
       </Helmet>
       <header>
         <div className="logo-container">
@@ -102,7 +109,7 @@ const App = () => {
 
       <section id="about" className="about-container">
         <div className="profile-container">
-          <img src={profileImage} alt="Profilio nuotrauka" className="profile-image" />
+          <img src={profileImage} alt="Profilio nuotrauka" className="profile-image" loading="lazy" />
         </div>
         <div className="about-text">
           <div className="content">
