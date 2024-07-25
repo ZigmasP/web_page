@@ -17,3 +17,5 @@
  - backende susikuriam hash_password.js ir susikonfiguruojame.
  - terminale paleidžiame node hash_password.js (sugeneruojamas koduotas slaptažodis iš esamo slaptažodio) ir duomenų bazėje matomas jau užšifruotas slaptaždis. 
   - isidiegit bcrypt ir jsonwebtoken 
+
+  norint pridėti meta žymes, reikia isidiegti react-helmet

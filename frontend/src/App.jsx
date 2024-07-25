@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { Helmet } from "react-helmet";
 import { FaBars, FaTimes, FaReact, FaJs, FaNode, FaBuilding, FaUniversity, FaMapMarkerAlt, FaEnvelope, FaPhone } from "react-icons/fa";
 import logo from "./assets/logo.webp"; 
-import profileImage from "./assets/mano.webp"; // Pakeičiam į tinkamą nuorodą į paveikslėlio failą
+import profileImage from "./assets/mano.webp"; // Ensure this path is correct
 import axios from "axios";
 import "./index.scss";
 
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [works, setWorks] = useState([]);
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
   const [showContactBox, setShowContactBox] = useState(false);
   
   useEffect(() => {
@@ -22,15 +22,23 @@ const App = () => {
   }, []);
   
   useEffect(() => {
-    const handlePageLoad = () => {
-      setIsPageLoaded(true);
-      setTimeout(() => {
-        setShowContactBox(true);
-      }, 3000); // Show contact box after 3 seconds
+    const checkIfLoaded = () => {
+      if (document.readyState === 'complete') {
+        setTimeout(() => {
+          setShowContactBox(true);
+        }, 2300); // Show contact box after 3 seconds
+      }
     };
-    
-    window.addEventListener('load', handlePageLoad);
-    return () => window.removeEventListener('load', handlePageLoad);
+
+    // Run on initial load
+    checkIfLoaded();
+
+    // Run on document ready state change
+    document.addEventListener('readystatechange', checkIfLoaded);
+
+    return () => {
+      document.removeEventListener('readystatechange', checkIfLoaded);
+    };
   }, []);
   
   const toggleMenu = useCallback(() => {
@@ -43,6 +51,20 @@ const App = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>ZigmasWebDev - Modernios Svetainės ir Programos</title>
+        <meta name="description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
+        <meta name="keywords" content="web development, svetainių kūrimas, React, JavaScript, Node.js, Zigmas, web dev, modernios svetainės, programos kūrimas" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Zigmas Petrauskas" />
+
+      
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="http://www.zigmaswebdev.lt/" />
+        <meta property="og:title" content="Zigmas WebDev - Modernios Svetainės ir Programos" />
+        <meta property="og:description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
+        <meta property="og:image" content="http://www.zigmaswebdev.lt/assets/logo.webp" />
+      </Helmet>
       <header>
         <div className="logo-container">
           <img src={logo} alt="Zigmaswebdev Logo" className="logo" loading="lazy" />
