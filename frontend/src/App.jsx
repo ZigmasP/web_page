@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
-import { FaBars, FaTimes, FaReact, FaJs, FaNode, FaBuilding, FaUniversity, FaMapMarkerAlt, FaEnvelope, FaPhone } from "react-icons/fa";
+import { FaBars, FaTimes, FaReact, FaJs, FaNode, FaBuilding, FaEnvelope, FaPhone } from "react-icons/fa";
 import logo from "./assets/logo.webp"; 
 import profileImage from "./assets/mano.webp"; // Ensure this path is correct
 import axios from "axios";
@@ -123,8 +123,8 @@ const App = () => {
               <span className="icon-text">
                 <FaNode className="icon" color="#68A063" /> Node.js
               </span>) technologijose.</p>
-            <p>Mano tikslas yra suteikti jums puikų interneto svetainių ir programų patyrimą, atitinkantį jūsų poreikius ir viršijantį jūsų lūkesčius. Esu pasirengęs įgyvendinti jūsų idėjas nuo pradžios iki pabaigos, siekdamas užtikrinti, kad jūsų projektas būtų sėkmingas.</p>
-            <p>Šiuo metu esu freelancer, todėl turėčiau galimybę dirbti su jumis tiesiogiai ir suteikti jums asmeninį dėmesį jūsų projektui. Nepaisant to, kad esu pradedantysis, esu labai motyvuotas tobulėti ir teikti aukščiausio lygio paslaugas savo klientams.</p>
+            <p>Mano tikslas yra suteikti jums puikų interneto svetainių ir programų patyrimą, atitinkantį jūsų poreikius. Esu pasirengęs įgyvendinti jūsų idėjas nuo pradžios iki pabaigos, siekdamas užtikrinti, kad jūsų projektas būtų sėkmingas.</p>
+            <p>Šiuo metu esu freelancer, todėl turėčiau galimybę dirbti su jumis tiesiogiai. Nepaisant to, kad esu pradedantysis programuotojas (0 - 6 mėn), esu labai motyvuotas tobulėti.</p>
             <p>Jei turite klausimų ar norite aptarti savo projektą, nedvejokite susisiekti su manimi. Būsiu labai dėkingas galimybei bendradarbiauti ir padėti jums pasiekti jūsų tikslus.</p>
             <p>Dėkoju už dėmesį ir laukiu galimybės dirbti su jumis!</p>
             <p>Su pagarba,</p>
@@ -157,18 +157,6 @@ const App = () => {
             <div>
               <span>Zigmas Petrauskas</span>
               <span>IDV pažymos kodas: 1269609</span>
-            </div>
-          </div>
-          <div className="contact-item">
-            <FaMapMarkerAlt className="icon" />
-            <div>
-              <span>Adresas: Kruojos g. 8-56, Pakruojis, Lietuva</span>
-            </div>
-          </div>
-          <div className="contact-item">
-            <FaUniversity className="icon" />
-            <div>
-              <span>Banko sąskaitos nr.: LT737300010097043750, Swedbank</span>
             </div>
           </div>
           <div className="contact-item">
