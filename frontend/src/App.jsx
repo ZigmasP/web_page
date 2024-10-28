@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { Helmet } from "react-helmet";
+
 import { FaBars, FaTimes, FaReact, FaJs, FaNode, FaBuilding, FaEnvelope, FaPhone } from "react-icons/fa";
 import logo from "./assets/logo.webp"; 
-import profileImage from "./assets/mano.webp"; // Ensure this path is correct
+import profileImage from "./assets/mano.webp"; // Patikrinkite, ar šis kelias teisingas
 import axios from "axios";
 import "./index.scss";
 
@@ -10,37 +10,31 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [works, setWorks] = useState([]);
   const [showContactBox, setShowContactBox] = useState(false);
-  
+
+  // Įkelti darbus iš serverio
   useEffect(() => {
-    axios.get('http://127.0.0.1:3000/works')
-      .then((response) => {
+    const fetchWorks = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:3000/works');
         setWorks(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Klaida gaunant darbus:', error);
-      });
-  }, []);
-  
-  useEffect(() => {
-    const checkIfLoaded = () => {
-      if (document.readyState === 'complete') {
-        setTimeout(() => {
-          setShowContactBox(true);
-        }, 2300); // Show contact box after 2.3 seconds
       }
     };
 
-    // Run on initial load
-    checkIfLoaded();
-
-    // Run on document ready state change
-    document.addEventListener('readystatechange', checkIfLoaded);
-
-    return () => {
-      document.removeEventListener('readystatechange', checkIfLoaded);
-    };
+    fetchWorks();
   }, []);
   
+  // Parodyti kontaktinę dėžutę po 2.3 sekundės
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContactBox(true);
+    }, 2300); // Parodyti kontaktinę dėžutę po 2.3 sekundžių
+
+    return () => clearTimeout(timer); // Išvalyti laikmatį, jei komponentas išmontuojamas
+  }, []);
+  
+  // Meniu valdymo funkcijos
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(prev => !prev);
   }, []);
@@ -51,51 +45,42 @@ const App = () => {
 
   return (
     <div>
-      <Helmet>
-        <title>ZigmasWebDev - Modernios Svetainės ir Programos</title>
-        <meta name="description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
-        <meta name="keywords" content="web development, svetainių kūrimas, React, JavaScript, Node.js, Zigmas, web dev, modernios svetainės, programos kūrimas" />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Zigmas Petrauskas" />
+      <title>ZigmasWebDev - Modernios Svetainės ir Programos</title>
+      <meta name="description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
+      <meta name="keywords" content="web development, svetainių kūrimas, React, JavaScript, Node.js, Zigmas, web dev, modernios svetainės, programos kūrimas" />
+      <meta name="robots" content="index, follow" />
+      <meta name="author" content="Zigmas Petrauskas" />
 
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="http://www.zigmaswebdev.lt/" />
-        <meta property="og:title" content="Zigmas WebDev - Modernios Svetainės ir Programos" />
-        <meta property="og:description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
-        <meta property="og:image" content="http://www.zigmaswebdev.lt/assets/logo.webp" />
-
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="http://www.zigmaswebdev.lt/" />
-        <meta property="twitter:title" content="Zigmas WebDev - Modernios Svetainės ir Programos" />
-        <meta property="twitter:description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
-        <meta property="twitter:image" content="http://www.zigmaswebdev.lt/assets/logo.webp" />
-      </Helmet>
-      <header>
-        <div className="logo-container">
-          <img src={logo} alt="Zigmaswebdev Logo" className="logo" loading="lazy" />
-        </div>
-        <nav className={isMenuOpen ? "open" : ""} aria-label="Main Navigation">
-          <ul className={isMenuOpen ? "open" : ""}>
-            <li>
-              <a href="#home" onClick={closeMenu}>Pagrindinis</a>
-            </li>
-            <li>
-              <a href="#about" onClick={closeMenu}>Apie mane</a>
-            </li>
-            <li>
-              <a href="#works" onClick={closeMenu}>Mano darbai</a>
-            </li>
-            <li>
-              <a href="#contacts" onClick={closeMenu}>Kontaktai</a>
-            </li>
-          </ul>
-        </nav>
-        <button className="menu-toggle" onClick={toggleMenu} aria-label="Toggle Menu">
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-      </header>
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="http://www.zigmaswebdev.lt/" />
+      <meta property="og:title" content="Zigmas WebDev - Modernios Svetainės ir Programos" />
+      <meta property="og:description" content="Sveiki! Esu Zigmas, specializuojantis frontend (React, JavaScript) ir backend (Node.js) technologijose. Kuriu modernias svetaines ir programas, atitinkančias jūsų poreikius." />
+      <meta property="og:image" content="http://www.zigmaswebdev.lt/assets/logo.webp" />
+    <header>
+      <div className="logo-container">
+        <img src={logo} alt="Zigmaswebdev Logo" className="logo" loading="lazy" />
+      </div>
+      <nav className={isMenuOpen ? "open" : ""} aria-label="Pagrindinė navigacija">
+        <ul className={isMenuOpen ? "open" : ""}>
+          <li>
+            <a href="#home" onClick={closeMenu}>Pagrindinis</a>
+          </li>
+          <li>
+            <a href="#about" onClick={closeMenu}>Apie mane</a>
+          </li>
+          <li>
+            <a href="#works" onClick={closeMenu}>Mano darbai</a>
+          </li>
+          <li>
+            <a href="#contacts" onClick={closeMenu}>Kontaktai</a>
+          </li>
+        </ul>
+      </nav>
+      <button className="menu-toggle" onClick={toggleMenu} aria-label="Perjungti meniu">
+        {isMenuOpen ? <FaTimes /> : <FaBars />}
+      </button>
+    </header>
 
       <section id="home" className="hero">
         <h1>Sveiki atvykę į ZigmasWebDev.lt</h1>

@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises; // naudojame fs.promises vietoj callback fs funkcijų
 const compression = require('compression');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -15,9 +15,8 @@ const port = process.env.PORT || 3000;
 
 // Sukuriamas uploads katalogas, jei jo nėra
 const uploadsPath = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsPath)) {
-  fs.mkdirSync(uploadsPath);
-}
+fs.access(uploadsPath)
+  .catch(() => fs.mkdir(uploadsPath)); // naudoju fs.promises su async vietoj fs.existsSync ir mkdirSync
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -176,14 +175,10 @@ app.delete('/works/:id', authenticateToken, async (req, res, next) => {
     }
     const photo = results[0].photo;
     const photoPath = path.join(uploadsPath, photo);
-    fs.unlink(photoPath, async (err) => {
-      if (err) {
-        return next(err);
-      }
-      const deleteQuery = 'DELETE FROM works WHERE id = ?';
-      const [results] = await pool.query(deleteQuery, [workId]);
-      res.status(200).json({ message: 'Darbas sėkmingai ištrintas', affectedRows: results.affectedRows });
-    });
+    await fs.unlink(photoPath); // naudojame async fs.unlink vietoj callback
+    const deleteQuery = 'DELETE FROM works WHERE id = ?';
+    const [deleteResults] = await pool.query(deleteQuery, [workId]);
+    res.status(200).json({ message: 'Darbas sėkmingai ištrintas', affectedRows: deleteResults.affectedRows });
   } catch (err) {
     console.error(err);
     next(err);
